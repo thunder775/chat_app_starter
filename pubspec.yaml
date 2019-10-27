@@ -34,12 +34,23 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
+  assets:
+    - assets/college.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
-
+  fonts:
+    - family: PlayfairDisplay
+      fonts:
+        - asset: assets/PlayfairDisplay-Regular.ttf
+    - family: Rubik
+      fonts:
+        - asset: assets/Rubik-Regular.ttf
+    - family: OldLondon
+      fonts:
+        - asset: assets/OldLondon.ttf
   # To add assets to your application, add an assets section, like this:
   # assets:
   #  - images/a_dot_burr.jpeg
