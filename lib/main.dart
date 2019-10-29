@@ -35,7 +35,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 child: Text(
               'McLaren Chat',
               style: TextStyle(
-                  color: Color(0xFF0096FB), fontSize: 40, fontFamily: 'Rubik'),
+                  color: Color(0xFF0096FB), fontSize: 40, fontFamily: 'PlayfairDisplay'),
             )),
             Padding(
               padding: const EdgeInsets.only(left: 24.0, right: 24, top: 24),

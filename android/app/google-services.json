@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1065488781673",
+    "firebase_url": "https://chat-app-65709.firebaseio.com",
+    "project_id": "chat-app-65709",
+    "storage_bucket": "chat-app-65709.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1065488781673:android:702cbd26c743e7d3662df8",
+        "android_client_info": {
+          "package_name": "com.mclarencollege.chat_app_starter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1065488781673-ol301f4g4cbsr154qmjbbpjpc72cqjfb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCGlPvRuOpvWw1ril2rMy_QRVy1t8mbzDE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1065488781673-ol301f4g4cbsr154qmjbbpjpc72cqjfb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
