@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ChatScreen extends StatefulWidget {
-  FirebaseUser user;
 
   @override
   _ChatScreenState createState() => _ChatScreenState();
@@ -14,6 +13,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController controller = TextEditingController();
   List<Widget> Messages = [];
+  FirebaseUser user;
 
   @override
   void initState() {
@@ -24,8 +24,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future getUser() async {
     print('initialised');
-    widget.user = await FirebaseAuth.instance.currentUser();
-    print(widget.user.email);
+    user = await FirebaseAuth.instance.currentUser();
+    print(user.email);
     controller.addListener(() {
       setState(() {});
     });
@@ -137,9 +137,10 @@ class _ChatScreenState extends State<ChatScreen> {
                             await Firestore.instance
                                 .collection('messages')
                                 .add({
-                              'sender': widget.user.email,
+                              'sender': user.email,
                               'text': controller.text
                             });
+//                            print(' wiiii=================${widget.user.email}');
                             controller.clear();
                             getMessages();
                           },
