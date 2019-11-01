@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ChatScreen extends StatefulWidget {
+  String roomID;
+
+  ChatScreen({this.roomID});
 
   @override
   _ChatScreenState createState() => _ChatScreenState();
@@ -12,7 +15,7 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController controller = TextEditingController();
-  List<Widget> Messages = [];
+
   FirebaseUser user;
 
   @override
@@ -25,37 +28,10 @@ class _ChatScreenState extends State<ChatScreen> {
   Future getUser() async {
     print('initialised');
     user = await FirebaseAuth.instance.currentUser();
+
     print(user.email);
     controller.addListener(() {
       setState(() {});
-    });
-  }
-
-  void getMessages() async {
-    FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    print('user isssss -----------${user.email}');
-    QuerySnapshot messages =
-        await Firestore.instance.collection('messages').getDocuments();
-    setState(() {
-      Messages = [];
-      for (int i = 0; i < messages.documents.length; i++) {
-        print('fetched user ${messages.documents[i]['sender']}');
-        if (messages.documents[i]['sender'] == user.email) {
-          print('into true case');
-          Messages.add(TextBubble(
-            isCurrentUser: true,
-            email: messages.documents[i]['sender'],
-            message: messages.documents[i]['text'],
-          ));
-        } else {
-          print('into false case');
-          Messages.add(TextBubble(
-            isCurrentUser: false,
-            email: messages.documents[i]['sender'],
-            message: messages.documents[i]['text'],
-          ));
-        }
-      }
     });
   }
 
@@ -63,6 +39,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: Image(image: AssetImage('assets/college.png')),
         backgroundColor: Color(0xFF0096FB),
         title: Text(
           'Chat',
@@ -88,71 +65,78 @@ class _ChatScreenState extends State<ChatScreen> {
               print('hey');
             },
           ),
-          IconButton(
-            icon: Icon(
-              Icons.file_download,
-              color: Colors.white,
+        ],
+      ),
+      body: Column(
+        children: <Widget>[
+          Expanded(
+            child: StreamBuilder<QuerySnapshot>(
+              stream: Firestore.instance
+                  .collection('rooms')
+                  .document('${widget.roomID}')
+                  .collection('messages').orderBy('time')
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return CircularProgressIndicator();
+                } else {
+                  return ListView.builder(
+                    itemBuilder: (context, int index) {
+                      return TextBubble(
+                        message: snapshot.data.documents[index].data['text'],
+                        email: snapshot.data.documents[index].data['sender'],
+                        isCurrentUser: user.email ==
+                            snapshot.data.documents[index].data['sender'],
+                      );
+                    },
+                    itemCount: snapshot.data.documents.length,
+                    shrinkWrap: true,
+                  );
+                }
+              },
             ),
-            onPressed: () {
-              getMessages();
-            },
+          ),
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: TextField(
+                  controller: controller,
+                  decoration: InputDecoration(
+                      focusColor: Color(0xFF0096FB),
+                      hintText: 'Enter your text here',
+                      hintStyle: TextStyle(color: Colors.grey)),
+                  onChanged: (String text) {},
+                ),
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              IconButton(
+                onPressed: controller.text.isEmpty?null:() async {
+                        String temp = controller.text;
+                        controller.clear();
+                        Firestore.instance
+                            .collection('rooms')
+                            .document('${widget.roomID}')
+                            .collection('messages').add({
+                          'text':temp,
+                          'sender': user.email,
+                          'time' : DateTime.now()
+                        });
+                      },
+                icon: Icon(Icons.send),
+                color: Colors.blue,
+              )
+            ],
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: Messages,
-              ),
-            ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: Container(
-                    width: 200,
-                    child: TextField(
-                      controller: controller,
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          focusColor: Color(0xFF0096FB),
-                          hintText: 'Enter your text here',
-                          hintStyle: TextStyle(color: Color(0xFF898989))),
-                      onChanged: (String text) {},
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                FloatingActionButton(
-                  backgroundColor: Color(0xFFAA00B6),
-                  child: IconButton(
-                    onPressed: controller.text.isEmpty
-                        ? null
-                        : () async {
-                            await Firestore.instance
-                                .collection('messages')
-                                .add({
-                              'sender': user.email,
-                              'text': controller.text
-                            });
-//                            print(' wiiii=================${widget.user.email}');
-                            controller.clear();
-                            getMessages();
-                          },
-                    icon: Icon(Icons.send),
-                    color: Colors.white,
-                  ),
-                )
-              ],
-            ),
-          ],
-        ),
-      ),
     );
+  }
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    controller.dispose();
   }
 }

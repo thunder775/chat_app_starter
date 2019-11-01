@@ -1,6 +1,4 @@
-import 'package:chat_app_starter/chat_screen.dart';
 import 'package:chat_app_starter/login_screen.dart';
-import 'package:chat_app_starter/message_bubble.dart';
 import 'package:chat_app_starter/registration_screen.dart';
 import 'package:flutter/material.dart';
 
