@@ -135,7 +135,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                           children: <Widget>[
                             ListTile(
                               trailing: IconButton(
-                                icon: Icon(Icons.content_copy),
+                                icon: Icon(Icons.content_copy,),
                                 onPressed: () {
                                   Clipboard.setData(new ClipboardData(
                                       text:
