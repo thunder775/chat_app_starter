@@ -1,5 +1,5 @@
 import 'dart:math';
-
+import 'package:flutter/services.dart';
 import 'package:chat_app_starter/chat_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +11,8 @@ class ChatRoomScreen extends StatefulWidget {
 }
 
 class _ChatRoomScreenState extends State<ChatRoomScreen> {
+  bool isValidID = true;
+  List chatRooms = [];
   int chatID;
   int newID;
   Random ran = new Random();
@@ -72,12 +74,20 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                     buttons: [
                       DialogButton(
                         onPressed: () {
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ChatScreen(
-                                        roomID: '$chatID',
-                                      )));
+                          if (chatRooms.contains(chatID)) {
+                            isValidID = true;
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ChatScreen(
+                                          roomID: '$chatID',
+                                        )));
+                          } else {
+                            setState(() {
+                              isValidID = false;
+                            });
+                            Navigator.pop(context);
+                          }
                         },
                         child: Text(
                           'JOIN',
@@ -90,27 +100,57 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
               icon: Icon(Icons.people),
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Container(
+              child: Center(
+                  child: isValidID
+                      ? null
+                      : Text(
+                          'Enter a valid Room ID!',
+                          style: TextStyle(
+                              color: Colors.red, fontWeight: FontWeight.bold),
+                        )),
+            ),
+          ),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: Firestore.instance.collection('rooms').orderBy('id').snapshots(),
+              stream: Firestore.instance
+                  .collection('rooms')
+                  .orderBy('id')
+                  .snapshots(),
               builder: (context, snapshot) {
-
                 if (!snapshot.hasData) {
-                  return CircularProgressIndicator();
+                  return Center(
+                      child: Container(
+                          height: 50,
+                          width: 50,
+                          child: CircularProgressIndicator()));
                 } else {
                   return ListView.builder(
                     itemBuilder: (context, index) {
+                      chatRooms.add(snapshot.data.documents[index].data['id']);
                       return Card(
                         child: Column(
                           children: <Widget>[
-                            ListTile(trailing: Icon(Icons.content_copy),
+                            ListTile(
+                              trailing: IconButton(
+                                icon: Icon(Icons.content_copy),
+                                onPressed: () {
+                                  Clipboard.setData(new ClipboardData(
+                                      text:
+                                          '${snapshot.data.documents[index].data['id']}'));
+                                },
+                              ),
                               leading: Icon(Icons.people),
-                              title: Text('${snapshot.data.documents[index].data['id']}'),
+                              title: Text(
+                                  '${snapshot.data.documents[index].data['id']}'),
                             ),
                           ],
                         ),
                       );
-                    },shrinkWrap: true,
+                    },
+                    shrinkWrap: true,
                     itemCount: snapshot.data.documents.length,
                   );
                 }

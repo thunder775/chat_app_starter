@@ -78,15 +78,18 @@ class _ChatScreenState extends State<ChatScreen> {
                   .snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return CircularProgressIndicator();
+                  return Center(child: Container(height: 50,width: 50,child: CircularProgressIndicator()));
                 } else {
                   return ListView.builder(
                     itemBuilder: (context, int index) {
-                      return TextBubble(
-                        message: snapshot.data.documents[index].data['text'],
-                        email: snapshot.data.documents[index].data['sender'],
-                        isCurrentUser: user.email ==
-                            snapshot.data.documents[index].data['sender'],
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextBubble(
+                          message: snapshot.data.documents[index].data['text'],
+                          email: snapshot.data.documents[index].data['sender'],
+                          isCurrentUser: user.email ==
+                              snapshot.data.documents[index].data['sender'],
+                        ),
                       );
                     },
                     itemCount: snapshot.data.documents.length,
