@@ -24,7 +24,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
         leading: Image(
           image: AssetImage('assets/college.png'),
         ),
-        title: Text('Select your Chat Room'),
+        title: Text('Select your chat Room'),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
